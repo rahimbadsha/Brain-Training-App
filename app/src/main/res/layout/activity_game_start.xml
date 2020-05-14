@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    tools:context=".GameStart">
+
+    <TextView
+        android:id="@+id/gameStartButtonId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="GO"
+        android:textSize="50sp"
+        android:background="@color/colorAccent"
+        android:padding="30dp"
+        android:textColor="@color/colorWhite"
+        android:clickable="true"
+        android:onClick="playGame"
+        android:foreground="?android:attr/selectableItemBackground"/>
+
+    <TextView
+        android:id="@+id/gameStartTimerText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:visibility="invisible"
+        android:textSize="80sp"
+        android:textColor="@color/material_blue"/>
+
+</LinearLayout>

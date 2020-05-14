@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp"
+    android:gravity="center_horizontal"
+    android:layout_marginTop="50dp"
+    tools:context=".LevelActivity">
+
+    <TextView
+        android:id="@+id/levelTitleTextId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:text="@string/lExcerciseHeadline"
+        android:padding="10dp"
+        android:lineHeight="30dp"
+        android:textAlignment="center"
+        android:textColor="@color/colorBlack"/>
+
+    <Button
+        android:id="@+id/lEasyButtonId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/lEasyButtonText"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textColor="@color/colorWhite"
+        android:background="@color/material_blue"
+        android:layout_marginTop="20dp"
+        android:padding="15dp"
+        android:tag="0"
+        android:onClick="chooseLevel"
+        />
+
+    <Button
+        android:id="@+id/lMediumButtonId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/lMediumButtonText"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textColor="@color/colorWhite"
+        android:background="@color/material_blue"
+        android:layout_marginTop="15dp"
+        android:padding="15dp"
+        android:tag="1"
+        android:onClick="chooseLevel"
+        />
+
+    <Button
+        android:id="@+id/lHardButtonId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/lHardButtonText"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textColor="@color/colorWhite"
+        android:background="@color/material_blue"
+        android:layout_marginTop="15dp"
+        android:padding="15dp"
+        android:tag="2"
+        android:onClick="chooseLevel"
+        />
+
+</LinearLayout>

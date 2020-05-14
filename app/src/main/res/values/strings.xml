@@ -1,0 +1,23 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name">Brain Trainer</string>
+
+    <!-- splash screen text -->
+    <string name="sHeadline">Discover what your\n mind can do</string>
+    <string name="sSubHeadline">Improve memory, increase focus, and find calm — with the #1\nbrain training app</string>
+    <string name="sFree">It is totally free!</string>
+
+    <!-- Level Activity text -->
+    <string name="lExcerciseHeadline">Exercise for your mind\nwith different level</string>
+    <string name="lEasyButtonText">Easy</string>
+    <string name="lMediumButtonText">Medium</string>
+    <string name="lHardButtonText">Hard </string>
+
+    <!-- Math Activity text -->
+    <string name="mChoosenHeadline">Choose your preferable mathematical term</string>
+    <string name="mAddition">Addition</string>
+    <string name="mSubtraction">Subtraction</string>
+    <string name="mMultiplication">Multiplication</string>
+    <string name="mDivision">Division</string>
+
+
+</resources>
