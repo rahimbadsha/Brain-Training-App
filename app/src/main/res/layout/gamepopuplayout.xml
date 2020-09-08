@@ -23,7 +23,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="3"
                     android:text="High Score"
-                    android:textColor="@color/deep_blue"
+                    android:textColor="@color/colorPrimary"
                     android:textSize="15sp" />
 
                 <TextView
@@ -33,7 +33,7 @@
                     android:clickable="true"
                     android:text="x"
                     android:textAlignment="center"
-                    android:textColor="@color/deep_blue"
+                    android:textColor="@color/colorPrimary"
                     android:textSize="40sp"
                     android:textStyle="bold"
                     android:tooltipText="Close" />

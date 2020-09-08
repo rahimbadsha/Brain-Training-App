@@ -21,6 +21,15 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -47,6 +56,10 @@ public class MainActivity extends AppCompatActivity {
     MediaPlayer highScoreMedia;
     MediaPlayer buttonClickMedia;
 
+    CountDownTimer timer;
+
+    private long backPressedTime;
+
     Dialog dialog;
 
     List<Integer> answer = new ArrayList<>();
@@ -61,22 +74,23 @@ public class MainActivity extends AppCompatActivity {
     int generateRandomValue = 1;
     String generateRandomMathTerm = "+";
 
-    public int loadScore()
-    {
+    private InterstitialAd mInterstitialAd;
+    private AdView mAdView;
+
+    public int loadScore() {
         SharedPreferences sharedPreferences = getSharedPreferences("gameScore", Context.MODE_PRIVATE);
         int scores = sharedPreferences.getInt("lastScore", 0);
         return scores;
     }
 
-    public void saveScore(int score)
-    {
+    public void saveScore(int score) {
         SharedPreferences sharedPreferences = getSharedPreferences("gameScore", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putInt("lastScore", score);
         editor.commit();
     }
 
-    public void showDialog(final Activity activity, String msg){
+    public void showDialog(final Activity activity, String msg) {
 
         dialog = new Dialog(activity);
 
@@ -87,8 +101,8 @@ public class MainActivity extends AppCompatActivity {
         popupScoreText = dialog.findViewById(R.id.popupScoreTextViewId);
         TextView popupCloseButton = dialog.findViewById(R.id.closeTextViewId);
         TextView popupTextHighScore = dialog.findViewById(R.id.popupTextHighScoreId);
-        final TextView popupYesButton =  dialog.findViewById(R.id.popupYesTextId);
-        TextView popupNoButton =  dialog.findViewById(R.id.popupNoTextId);
+        final TextView popupYesButton = dialog.findViewById(R.id.popupYesTextId);
+        TextView popupNoButton = dialog.findViewById(R.id.popupNoTextId);
         popupHighScoreText = dialog.findViewById(R.id.popupScoreTextViewId);
         highScoreLayout = dialog.findViewById(R.id.highScoreLayoutId);
         gameLineyerLayout = dialog.findViewById(R.id.gameLineyerLayout);
@@ -98,15 +112,11 @@ public class MainActivity extends AppCompatActivity {
         loadScores = loadScore();
         popupTextHighScore.setText("Last Score: " + valueOf(loadScores));
 
-        if (loadScores == 0)
-        {
-            if(score == 0)
-            {
+        if (loadScores == 0) {
+            if (score == 0) {
                 endGameMedia.start();
                 popupScoreText.setText(msg);
-            }
-            else
-            {
+            } else {
                 highScoreMedia.start();
 
                 saveScore(score);
@@ -116,11 +126,8 @@ public class MainActivity extends AppCompatActivity {
                 popupScoreText.setText(msg);
                 popupTextHighScore.setText("Last Score: " + valueOf(loadScores));
             }
-        }
-        else
-        {
-            if (score > loadScores)
-            {
+        } else {
+            if (score > loadScores) {
                 highScoreMedia.start();
 
                 saveScore(score);
@@ -129,9 +136,7 @@ public class MainActivity extends AppCompatActivity {
                 popupHighScoreText.setTextColor(Color.GREEN);
                 popupScoreText.setText(msg);
                 popupTextHighScore.setText("Last Score: " + valueOf(loadScores));
-            }
-            else
-            {
+            } else {
                 endGameMedia.start();
                 popupScoreText.setText(msg);
             }
@@ -160,12 +165,30 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                highScoreMedia.stop();
-                endGameMedia.stop();
-                onStop();
-                Intent intent = new Intent(getApplicationContext(), LevelActivity.class);
-                startActivity(intent);
-                finish();
+                if (mInterstitialAd.isLoaded()) {
+                    mInterstitialAd.show();
+                } else {
+                    highScoreMedia.stop();
+                    endGameMedia.stop();
+                    onStop();
+                    Intent intent = new Intent(getApplicationContext(), LevelActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
+                }
+
+                mInterstitialAd.setAdListener(new AdListener() {
+                    @Override
+                    public void onAdClosed() {
+                        highScoreMedia.stop();
+                        endGameMedia.stop();
+                        onStop();
+                        Intent intent = new Intent(getApplicationContext(), LevelActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
             }
         });
 
@@ -175,15 +198,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        if (dialog!=null) {
+        if (dialog != null) {
             if (dialog.isShowing()) {
                 dialog.dismiss();
             }
         }
     }
 
-    public void playAgain(View view)
-    {
+    public void playAgain(View view) {
         score = 0;
         numberOfQuestions = 0;
         isActive = true;
@@ -194,12 +216,11 @@ public class MainActivity extends AppCompatActivity {
 
         generateQuestion();
 
-        new CountDownTimer(40500, 2000)
-        {
+       timer = new CountDownTimer(40500, 2000) {
             @Override
             public void onTick(long millisUnitlFinished) {
 
-                timerTextView.setText(valueOf(millisUnitlFinished / 1000) + "s" );
+                timerTextView.setText(valueOf(millisUnitlFinished / 1000) + "s");
             }
 
             @Override
@@ -211,29 +232,37 @@ public class MainActivity extends AppCompatActivity {
                         "\nYour Score: " + Integer.toString(score));
                 final String value = resultTextView.getText().toString();
 
-                showDialog(MainActivity.this, value);
+                if (mInterstitialAd.isLoaded()) {
+                    mInterstitialAd.show();
+                } else {
+                    showDialog(MainActivity.this, value);
+                }
+
+                mInterstitialAd.setAdListener(new AdListener() {
+                    @Override
+                    public void onAdClosed() {
+                        showDialog(MainActivity.this, value);
+                    }
+                });
             }
         }.start();
     }
 
 
-
-    public void generateQuestion()
-    {
+    public void generateQuestion() {
         Random rand = new Random();
 
         int a = rand.nextInt(generateRandomValue);
         int b = rand.nextInt(generateRandomValue);
 
-        while (b == 0)
-        {
+        while (b == 0) {
             b = rand.nextInt(generateRandomValue);
         }
 
 
         sumTextView.setText(
                 Integer.toString(a) + "  " + levelSelection.get(1) +
-                " " + Integer.toString(b) + " = ?");
+                        " " + Integer.toString(b) + " = ?");
 
         locationOfCorrectAnswer = rand.nextInt(4);
 
@@ -241,74 +270,60 @@ public class MainActivity extends AppCompatActivity {
 
         int incorrectAnswer = 0;
 
-        for (int i = 0; i < 4; i++)
-        {
-            if (i == locationOfCorrectAnswer)
-            {
-                switch (levelSelection.get(1))
-                {
+        for (int i = 0; i < 4; i++) {
+            if (i == locationOfCorrectAnswer) {
+                switch (levelSelection.get(1)) {
                     case "+":
-                        answer.add(a+b);
+                        answer.add(a + b);
                         break;
                     case "-":
-                        answer.add(a-b);
+                        answer.add(a - b);
                         break;
                     case "*":
-                        answer.add(a*b);
+                        answer.add(a * b);
                         break;
                     case "/":
-                        answer.add(a/b);
+                        answer.add(a / b);
                         break;
                 }
-            }
-            else
-            {
-                switch (levelSelection.get(1))
-                {
+            } else {
+                switch (levelSelection.get(1)) {
                     case "+":
                         incorrectAnswer = rand.nextInt(generateRandomValue + generateRandomValue);
-                        if ((answer.contains(incorrectAnswer)))
-                        {
-                            while (incorrectAnswer == a+b)
-                            {
+                        if ((answer.contains(incorrectAnswer))) {
+                            while (incorrectAnswer == a + b) {
                                 incorrectAnswer = rand.nextInt(generateRandomValue + generateRandomValue);
                             }
                         }
                         answer.add(incorrectAnswer);
                         break;
                     case "-":
-                        incorrectAnswer = rand.nextInt(generateRandomValue );
-                        while (answer.contains(incorrectAnswer))
-                        {
+                        incorrectAnswer = rand.nextInt(generateRandomValue);
+                        while (answer.contains(incorrectAnswer)) {
                             incorrectAnswer = rand.nextInt(generateRandomValue * generateRandomValue);
                         }
-                        while (incorrectAnswer == a-b )
-                        {
+                        while (incorrectAnswer == a - b) {
                             incorrectAnswer = rand.nextInt(generateRandomValue);
                         }
                         answer.add(incorrectAnswer);
                         break;
                     case "*":
                         incorrectAnswer = rand.nextInt(generateRandomValue * generateRandomValue);
-                        while (answer.contains(incorrectAnswer))
-                        {
+                        while (answer.contains(incorrectAnswer)) {
                             incorrectAnswer = rand.nextInt(generateRandomValue * generateRandomValue);
                         }
-                        while (incorrectAnswer == a*b )
-                        {
+                        while (incorrectAnswer == a * b) {
                             incorrectAnswer = rand.nextInt(generateRandomValue * generateRandomValue);
                         }
                         answer.add(incorrectAnswer);
                         break;
                     case "/":
                         incorrectAnswer = rand.nextInt(10);
-                        while (answer.contains(incorrectAnswer))
-                        {
-                            incorrectAnswer = rand.nextInt(10 );
+                        while (answer.contains(incorrectAnswer)) {
+                            incorrectAnswer = rand.nextInt(10);
                         }
-                        while (incorrectAnswer == a/b )
-                        {
-                            incorrectAnswer = rand.nextInt(10 );
+                        while (incorrectAnswer == a / b) {
+                            incorrectAnswer = rand.nextInt(10);
                         }
                         answer.add(incorrectAnswer);
                         break;
@@ -322,10 +337,8 @@ public class MainActivity extends AppCompatActivity {
         button3.setText(Integer.toString(answer.get(3)));
     }
 
-    public void chooseAnswer(View view)
-    {
-        if (isActive)
-        {
+    public void chooseAnswer(View view) {
+        if (isActive) {
             buttonClickMedia = MediaPlayer.create(getApplication(), R.raw.click4);
             buttonClickMedia.start();
             if (view.getTag().toString().equals(Integer.toString(locationOfCorrectAnswer))) {
@@ -333,9 +346,7 @@ public class MainActivity extends AppCompatActivity {
                 resultTextView.setVisibility(View.VISIBLE);
                 resultTextView.setText("Correct!");
                 resultTextView.setTextColor(Color.GREEN);
-            }
-            else
-            {
+            } else {
                 resultTextView.setVisibility(View.VISIBLE);
                 resultTextView.setText("Wrong!");
                 resultTextView.setTextColor(Color.RED);
@@ -350,11 +361,56 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
-        Intent intent = new Intent(getApplicationContext(), LevelActivity.class);
-        startActivity(intent);
-        finish();
+        if (backPressedTime + 2000 > System.currentTimeMillis())
+        {
+            finishGame();
+        }
+        else
+        {
+            Toast.makeText(MainActivity.this, "Press back again to finish the game", Toast.LENGTH_SHORT).show();
+        }
+        backPressedTime = System.currentTimeMillis();
+    }
 
-        super.onBackPressed();
+    private void finishGame() {
+        timer.cancel();
+        isActive = false;
+        resultTextView.setVisibility(View.INVISIBLE);
+        resultTextView.setText("Total Question: " + Integer.toString(numberOfQuestions) +
+                "\nYour Score: " + Integer.toString(score));
+        final String value = resultTextView.getText().toString();
+
+
+        if (mInterstitialAd.isLoaded()) {
+            mInterstitialAd.show();
+        } else {
+            showDialog(MainActivity.this, value);
+        }
+
+        mInterstitialAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdClosed() {
+                showDialog(MainActivity.this, value);
+            }
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (timer != null)
+        {
+            timer.cancel();
+        }
+
+        if (dialog.isShowing()) {
+            dialog.dismiss();
+        }
+
+        buttonClickMedia.stop();
+        highScoreMedia.stop();
+        endGameMedia.stop();
     }
 
 
@@ -378,17 +434,32 @@ public class MainActivity extends AppCompatActivity {
         highScoreMedia = MediaPlayer.create(getApplication(), R.raw.highscore);
         endGameMedia = MediaPlayer.create(getApplication(), R.raw.gameend);
 
+        AdView adView = new AdView(this);
+        adView.setAdSize(AdSize.BANNER);
+        adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
+
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+            }
+        });
+        mAdView = findViewById(R.id.mainActivityadView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+
+        mInterstitialAd = new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+
 
         Bundle bundle = getIntent().getExtras();
 
-        if (bundle != null)
-        {
+        if (bundle != null) {
             levelSelection.clear();
             levelSelection = bundle.getStringArrayList("lastString");
             Toast.makeText(this, "Start Playing", Toast.LENGTH_SHORT).show();
 
-            switch(levelSelection.get(0))
-            {
+            switch (levelSelection.get(0)) {
                 case "0":
                     generateRandomValue = 11;
                     playAgain(playAgainButton);

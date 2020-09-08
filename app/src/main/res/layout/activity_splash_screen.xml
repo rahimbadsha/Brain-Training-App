@@ -6,15 +6,10 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    android:background="@drawable/gradient_1"
+    android:background="@color/colorPrimary"
     android:padding="20dp"
     tools:context=".SplashScreen">
 
-    <ImageView
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:src="@drawable/brain2"
-        />
 
     <TextView
         android:layout_width="wrap_content"
@@ -24,14 +19,6 @@
         android:textSize="30sp"
         android:textAlignment="center"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/sSubHeadline"
-        android:textColor="@color/colorWhite"
-        android:textSize="18sp"
-        android:textAlignment="center"
-        android:layout_marginTop="20dp"/>
 
     <ProgressBar
         android:id="@+id/progressBarId"
