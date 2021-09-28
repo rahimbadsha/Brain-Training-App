@@ -79,7 +79,7 @@ public class GameStart extends AppCompatActivity {
 
         AdView adView = new AdView(this);
         adView.setAdSize(AdSize.BANNER);
-        adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
+        adView.setAdUnitId("ca-app-pub-3842074547317722/5957974548");
 
         MobileAds.initialize(this, new OnInitializationCompleteListener() {
             @Override

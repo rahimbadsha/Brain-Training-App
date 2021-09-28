@@ -49,7 +49,7 @@ public class LevelActivity extends AppCompatActivity {
 
         AdView adView = new AdView(this);
         adView.setAdSize(AdSize.BANNER);
-        adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
+        adView.setAdUnitId("ca-app-pub-3842074547317722/9398526101");
 
         MobileAds.initialize(this, new OnInitializationCompleteListener() {
             @Override

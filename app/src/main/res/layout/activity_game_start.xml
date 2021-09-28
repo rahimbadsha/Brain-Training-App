@@ -4,42 +4,40 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:gravity="center"
+    android:orientation="vertical"
     tools:context=".GameStart">
 
     <TextView
         android:id="@+id/gameStartButtonId"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="GO"
-        android:textSize="50sp"
         android:background="@color/colorAccent"
-        android:padding="30dp"
-        android:textColor="@color/colorWhite"
         android:clickable="true"
+        android:foreground="?android:attr/selectableItemBackground"
         android:onClick="playGame"
-        android:foreground="?android:attr/selectableItemBackground"/>
+        android:padding="30dp"
+        android:text="GO"
+        android:textColor="@color/colorWhite"
+        android:textSize="50sp" />
 
     <TextView
         android:id="@+id/gameStartTimerText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textStyle="bold"
-        android:visibility="invisible"
+        android:textColor="@color/material_blue"
         android:textSize="80sp"
-        android:textColor="@color/material_blue"/>
+        android:textStyle="bold"
+        android:visibility="invisible" />
 
-    <com.google.android.gms.ads.AdView
-        xmlns:ads="http://schemas.android.com/apk/res-auto"
+    <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
         android:id="@+id/adViewGameStart"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
         ads:adSize="BANNER"
-        ads:adUnitId="ca-app-pub-3940256099942544/6300978111">
-    </com.google.android.gms.ads.AdView>
+        ads:adUnitId="ca-app-pub-3940256099942544/6300978111"></com.google.android.gms.ads.AdView>
 
 </LinearLayout>
